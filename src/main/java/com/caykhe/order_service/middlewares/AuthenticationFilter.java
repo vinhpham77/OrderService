@@ -4,9 +4,11 @@ import com.caykhe.order_service.dtos.AuthenticationResult;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,11 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
     public AuthenticationFilter(RestTemplate restTemplate) {
         super(AnyRequestMatcher.INSTANCE);
         this.restTemplate = restTemplate;
+    }
+    
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        super.setAuthenticationManager(authenticationManager);
     }
 
     @Override

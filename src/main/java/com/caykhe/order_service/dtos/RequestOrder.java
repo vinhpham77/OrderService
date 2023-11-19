@@ -6,7 +6,6 @@ import java.util.Date;
 @Data
 
 public class RequestOrder {
-
     private String userId;
     private Date orderDate;
     private Double totalAmount;

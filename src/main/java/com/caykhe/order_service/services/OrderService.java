@@ -4,7 +4,6 @@ import com.caykhe.order_service.dtos.RequestOrder;
 import com.caykhe.order_service.models.Order;
 import com.caykhe.order_service.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,18 +18,20 @@ public class OrderService {
 
         return orderRepository.findById(id);
     }
-    public List<Order> getAllOrder(){
-        return orderRepository.findAll();}
 
-    public Order createProduct( RequestOrder request) {
+    public List<Order> getAllOrder() {
+        return orderRepository.findAll();
+    }
 
-        Order newOrder =Order.builder()
+    public Order createOrder(RequestOrder request) {
+        Order newOrder = Order.builder()
                 .userId(request.getUserId())
                 .orderDate(request.getOrderDate())
                 .totalAmount(request.getTotalAmount())
                 .build();
         return orderRepository.save(newOrder);
     }
+
     public Order updateOrder(String id, Order requestUpdate) throws Exception {
 
         Optional<Order> OrderOptional = orderRepository.findById(id);
@@ -56,9 +57,4 @@ public class OrderService {
 //        );
 
 
-
-
-
-
-    
 }
