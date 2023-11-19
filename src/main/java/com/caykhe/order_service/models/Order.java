@@ -21,5 +21,4 @@ public class Order {
     private Date orderDate;
     @NotBlank(message = "Tài khoản không được để trống")
     private Double totalAmount;
-
 }

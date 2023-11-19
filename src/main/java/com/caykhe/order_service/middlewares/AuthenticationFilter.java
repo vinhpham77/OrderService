@@ -4,9 +4,11 @@ import com.caykhe.order_service.dtos.AuthenticationResult;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +28,11 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         super(AnyRequestMatcher.INSTANCE);
         this.restTemplate = restTemplate;
     }
+    
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        super.setAuthenticationManager(authenticationManager);
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
@@ -36,7 +43,7 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
 
         if (result.isAuthenticated()) {
             // Nếu xác thực thành công, tạo một đối tượng Authentication và trả về
-            return new UsernamePasswordAuthenticationToken(result.getUsername(), null, result.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(null, null, null);
         } else {
             // Nếu xác thực thất bại, ném một ngoại lệ
             throw new BadCredentialsException("Authentication failed");
@@ -51,6 +58,4 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         ResponseEntity<AuthenticationResult> response = restTemplate.exchange(url, HttpMethod.GET, entity, AuthenticationResult.class);
         return response.getBody();
     }
-    
-    
 }
