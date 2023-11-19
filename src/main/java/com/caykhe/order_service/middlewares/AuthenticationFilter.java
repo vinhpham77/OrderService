@@ -36,7 +36,7 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
 
         if (result.isAuthenticated()) {
             // Nếu xác thực thành công, tạo một đối tượng Authentication và trả về
-            return new UsernamePasswordAuthenticationToken(result.getUsername(), null, result.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(null, null, null);
         } else {
             // Nếu xác thực thất bại, ném một ngoại lệ
             throw new BadCredentialsException("Authentication failed");
@@ -51,6 +51,4 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         ResponseEntity<AuthenticationResult> response = restTemplate.exchange(url, HttpMethod.GET, entity, AuthenticationResult.class);
         return response.getBody();
     }
-    
-    
 }
