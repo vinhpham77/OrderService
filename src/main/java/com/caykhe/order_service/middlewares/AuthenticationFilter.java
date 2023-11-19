@@ -1,61 +1,40 @@
 package com.caykhe.order_service.middlewares;
 
-import com.caykhe.order_service.dtos.AuthenticationResult;
+import com.caykhe.order_service.services.TokenAuthenticationService;
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
+import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
 @Component
-public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-    private final RestTemplate restTemplate;
-    public AuthenticationFilter(RestTemplate restTemplate) {
-        super(AnyRequestMatcher.INSTANCE);
-        this.restTemplate = restTemplate;
-    }
-    
-    @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        super.setAuthenticationManager(authenticationManager);
+public class AuthenticationFilter extends GenericFilterBean {
+    private final TokenAuthenticationService tokenAuthenticationService;
+
+    public AuthenticationFilter(TokenAuthenticationService tokenAuthenticationService) {
+        this.tokenAuthenticationService = tokenAuthenticationService;
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        // Lấy token từ request
-        String token = request.getHeader("Authorization");
-        
-        AuthenticationResult result = authenticateWithThirdParty(token);
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String token = httpRequest.getHeader("Authorization");
 
-        if (result.isAuthenticated()) {
-            // Nếu xác thực thành công, tạo một đối tượng Authentication và trả về
-            return new UsernamePasswordAuthenticationToken(null, null, null);
+        if (tokenAuthenticationService.authenticate(token)) {
+            SecurityContextHolder.getContext().setAuthentication(new PreAuthenticatedAuthenticationToken(token, null));
         } else {
-            // Nếu xác thực thất bại, ném một ngoại lệ
-            throw new BadCredentialsException("Authentication failed");
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
-    }
 
-    private AuthenticationResult authenticateWithThirdParty(String token) {
-        String url = "http://localhost:8080/api/v1/verify-token";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-        ResponseEntity<AuthenticationResult> response = restTemplate.exchange(url, HttpMethod.GET, entity, AuthenticationResult.class);
-        return response.getBody();
+        chain.doFilter(request, response);
     }
 }
