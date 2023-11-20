@@ -1,29 +1,41 @@
 package com.caykhe.order_service.services;
 
-import com.caykhe.order_service.controllers.OrderHistoryController;
-import com.caykhe.order_service.dtos.RequestOrderHistory;
+import com.caykhe.order_service.models.Order;
 import com.caykhe.order_service.models.OrderHistory;
 import com.caykhe.order_service.repositories.OrderHistoryRepository;
+import lombok.RequiredArgsConstructor;
+import com.caykhe.order_service.dtos.RequestOrderHistory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OrderHistoryService {
-    @Autowired
-    private OrderHistoryRepository orderHistoryRepository;
+
+    private final OrderHistoryRepository orderHistoryRepository;
+    private final OrderService orderService;
 
     public List<OrderHistory> getAllOrderHistories() {
         return orderHistoryRepository.findAll();
     }
 
     public OrderHistory getOrderHistoryById(String orderHistoryId) {
-        return orderHistoryRepository.findById(orderHistoryId).orElse(null);
+        return orderHistoryRepository.findById(orderHistoryId)
+                .orElseThrow(() -> new UsernameNotFoundException("OrderHistory not found"));
     }
 
-    public OrderHistory createOrderHistory(OrderHistory orderHistory) {
+    public OrderHistory createOrderHistory(RequestOrderHistory requestOrderHistory) {
+        Order order = orderService.getOrderById(requestOrderHistory.getOrderId())
+                .orElseThrow(() -> new UsernameNotFoundException("Order not found"));
+        OrderHistory orderHistory = OrderHistory.builder()
+                .orderId(requestOrderHistory.getOrderId())
+                .status(requestOrderHistory.getStatus())
+                .updateAt(requestOrderHistory.getUpdateAt())
+                .build();
         return orderHistoryRepository.save(orderHistory);
     }
 
@@ -45,5 +57,4 @@ public class OrderHistoryService {
         orderHistoryRepository.deleteById(orderHistoryId);
     }
 }
-
 

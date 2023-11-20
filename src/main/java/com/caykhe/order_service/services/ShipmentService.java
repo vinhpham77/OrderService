@@ -2,30 +2,41 @@ package com.caykhe.order_service.services;
 
 import com.caykhe.order_service.dtos.ApiException;
 import com.caykhe.order_service.dtos.RequestShipment;
+import com.caykhe.order_service.models.Order;
 import com.caykhe.order_service.models.Shipment;
 import com.caykhe.order_service.repositories.ShipmentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class ShipmentService {
-    @Autowired
-    private ShipmentRepository shipmentRepository;
+    private final ShipmentRepository shipmentRepository;
+    private final OrderService orderService;
 
     public List<Shipment> getAllShipments() {
         return shipmentRepository.findAll();
     }
 
     public Shipment getShipmentById(String shipmentId) {
-        return shipmentRepository.findById(shipmentId).orElse(null);
+        return shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new UsernameNotFoundException("Shipment not found"));
     }
 
-    public Shipment createShipment(Shipment shipment) {
+    public Shipment createShipment(RequestShipment requestShipment) {
+        Order order = orderService.getOrderById(requestShipment.getOrderId())
+                .orElseThrow(() -> new UsernameNotFoundException("Order not found"));
+        Shipment shipment = Shipment.builder()
+                .orderId(requestShipment.getOrderId())
+                .estimateDeliveryDate(requestShipment.getEstimateDeliveryDate())
+                .trackingNumber(requestShipment.getTrackingNumber())
+                .shippingMethod(requestShipment.getShippingMethod())
+                .build();
         return shipmentRepository.save(shipment);
     }
 

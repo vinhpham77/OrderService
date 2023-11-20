@@ -1,9 +1,9 @@
 package com.caykhe.order_service.repositories;
 
-import com.caykhe.order_service.models.OrderHistory;
+import com.caykhe.order_service.models.Shipment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrderHistoryRepository extends MongoRepository<OrderHistory,String> {
+public interface ShipmentReponsitory extends MongoRepository<Shipment,String> {
 }
