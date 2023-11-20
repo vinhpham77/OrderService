@@ -1,9 +1,11 @@
 package com.caykhe.order_service.services;
 
+import com.caykhe.order_service.dtos.ApiException;
 import com.caykhe.order_service.dtos.RequestOrder;
 import com.caykhe.order_service.models.Order;
 import com.caykhe.order_service.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,20 +43,22 @@ public class OrderService {
             order.setOrderDate(requestUpdate.getOrderDate());
             order.setUserId(requestUpdate.getUserId());
             order.setTotalAmount(requestUpdate.getTotalAmount());
-
-
             orderRepository.save(order);
             return order;
         } else {
             throw new Exception("Error");
         }
     }
-
-
-//    public List<Product> filterProducts(String categoryId, String brandId, double minPrice, double maxPrice, int minStock) {
-//        return productRepository.findByCategoryIdAndBrandIdAndPriceBetweenAndStockGreaterThanEqual(
-//                categoryId, brandId, minPrice, maxPrice, minStock
-//        );
-
+    public Boolean CheckOrder(String id){
+        return this.getOrderById(id).isPresent();
+    }
+    public void deleteById(String id) {
+        if (!CheckOrder(id))
+            throw new ApiException("Không tìm thấy sản phẩm", HttpStatus.NOT_FOUND);
+        else {
+            Optional<Order> userOptional = getOrderById(id);
+            userOptional.ifPresent(orderRepository::delete);
+        }
+    }
 
 }
