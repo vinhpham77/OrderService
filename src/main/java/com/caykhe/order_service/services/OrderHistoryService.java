@@ -18,7 +18,7 @@ public class OrderHistoryService {
 
         return orderHistoryRepository.findById(id);
     }
-    public List<OrderHistory> getAllOrderHistory(){
-        return orderRepository.findAll();
-    }
+//    public List<OrderHistory> getAllOrderHistory(){
+//        return orderRepository.findAll();
+//    }
 }
