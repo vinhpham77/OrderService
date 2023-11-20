@@ -24,7 +24,8 @@ public class ShipmentService {
     }
 
     public Shipment getShipmentById(String shipmentId) {
-        return shipmentRepository.findById(shipmentId).orElse(null);
+        return shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new UsernameNotFoundException("Shipment not found"));
     }
 
     public Shipment createShipment(RequestShipment requestShipment) {

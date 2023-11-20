@@ -23,15 +23,23 @@ public class OrderHistoryController {
     }
 
     @GetMapping("/{orderHistoryId}")
-    public ResponseEntity<OrderHistory> getOrderHistoryById(@PathVariable String orderHistoryId) {
-        OrderHistory orderHistory = orderHistoryService.getOrderHistoryById(orderHistoryId);
-        return ResponseEntity.ok(orderHistory);
+    public ResponseEntity<?> getOrderHistoryById(@PathVariable String orderHistoryId) {
+        try{
+            OrderHistory orderHistory = orderHistoryService.getOrderHistoryById(orderHistoryId);
+            return ResponseEntity.ok(orderHistory);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/create")
-    public ResponseEntity<OrderHistory> createOrderHistory(@RequestBody RequestOrderHistory requestOrderHistory) {
-        OrderHistory createdOrderHistory = orderHistoryService.createOrderHistory(requestOrderHistory);
-        return new ResponseEntity<>(createdOrderHistory, HttpStatus.CREATED);
+    public ResponseEntity<?> createOrderHistory(@RequestBody RequestOrderHistory requestOrderHistory) {
+        try{
+            OrderHistory createdOrderHistory = orderHistoryService.createOrderHistory(requestOrderHistory);
+            return new ResponseEntity<>(createdOrderHistory, HttpStatus.CREATED);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{orderHistoryId}")

@@ -24,7 +24,8 @@ public class OrderHistoryService {
     }
 
     public OrderHistory getOrderHistoryById(String orderHistoryId) {
-        return orderHistoryRepository.findById(orderHistoryId).orElse(null);
+        return orderHistoryRepository.findById(orderHistoryId)
+                .orElseThrow(() -> new UsernameNotFoundException("OrderHistory not found"));
     }
 
     public OrderHistory createOrderHistory(RequestOrderHistory requestOrderHistory) {
