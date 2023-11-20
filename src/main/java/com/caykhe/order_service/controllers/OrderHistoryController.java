@@ -28,9 +28,9 @@ public class OrderHistoryController {
         return ResponseEntity.ok(orderHistory);
     }
 
-    @PostMapping
-    public ResponseEntity<OrderHistory> createOrderHistory(@RequestBody OrderHistory orderHistory) {
-        OrderHistory createdOrderHistory = orderHistoryService.createOrderHistory(orderHistory);
+    @PostMapping("/create")
+    public ResponseEntity<OrderHistory> createOrderHistory(@RequestBody RequestOrderHistory requestOrderHistory) {
+        OrderHistory createdOrderHistory = orderHistoryService.createOrderHistory(requestOrderHistory);
         return new ResponseEntity<>(createdOrderHistory, HttpStatus.CREATED);
     }
 
