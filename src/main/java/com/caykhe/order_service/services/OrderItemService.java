@@ -42,7 +42,7 @@ public class OrderItemService {
 
     }
 
-    public OrderItem updateOrderItem(String id, RequestOrderItem requestUpdate) throws Exception {
+    public OrderItem updateOrderItem(String id, RequestOrderItem requestUpdate) {
         Optional<OrderItem> orderItemOptional = orderItemRepository.findById(id);
 
         if (orderItemOptional.isPresent()) {
