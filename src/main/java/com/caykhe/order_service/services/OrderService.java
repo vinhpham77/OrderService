@@ -47,7 +47,7 @@ public class OrderService {
             orderRepository.save(order);
             return order;
         } else {
-            throw new Exception("Error");
+            throw new ApiException("Không tìm thấy oder id ",HttpStatus.NOT_FOUND);
         }
     }
     public Boolean CheckOrder(String id){

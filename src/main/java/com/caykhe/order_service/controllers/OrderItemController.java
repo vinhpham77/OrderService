@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/orderItems")
 public class OrderItemController {
-    final OrderItemService orderItemService;
+    private final OrderItemService orderItemService;
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderItem> getOrderItemById(@PathVariable String id) {
@@ -29,7 +29,7 @@ public class OrderItemController {
         return orderItemService.getAllOrderItems();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<OrderItem> createOrderItem(@RequestBody RequestOrderItem request) {
         OrderItem newOrderItem = orderItemService.createOrderItem(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(newOrderItem);
@@ -44,7 +44,6 @@ public class OrderItemController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrderItemById(@PathVariable String id) {
         try {
