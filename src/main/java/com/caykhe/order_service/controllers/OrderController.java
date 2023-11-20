@@ -33,7 +33,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(requestOrder));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable String id, @RequestBody Order requestUpdate) throws Exception {
+    public ResponseEntity<Order> updateOrder(@PathVariable String id, @RequestBody RequestOrder requestUpdate) throws Exception {
         if(orderService.CheckOrder(id)) {
             Order updatedOrder = orderService.updateOrder(id, requestUpdate);
             return new ResponseEntity<>(updatedOrder, HttpStatus.OK);

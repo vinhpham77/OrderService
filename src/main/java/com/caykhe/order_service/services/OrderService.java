@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +35,13 @@ public class OrderService {
         return orderRepository.save(newOrder);
     }
 
-    public Order updateOrder(String id, Order requestUpdate) throws Exception {
+    public Order updateOrder(String id, RequestOrder requestUpdate) throws Exception {
 
         Optional<Order> OrderOptional = orderRepository.findById(id);
 
         if (OrderOptional.isPresent()) {
             Order order = OrderOptional.get();
-            order.setOrderDate(requestUpdate.getOrderDate());
+            order.setOrderDate(new Date());
             order.setUserId(requestUpdate.getUserId());
             order.setTotalAmount(requestUpdate.getTotalAmount());
             orderRepository.save(order);
