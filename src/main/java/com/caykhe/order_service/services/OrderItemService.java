@@ -2,6 +2,7 @@ package com.caykhe.order_service.services;
 
 import com.caykhe.order_service.dtos.ApiException;
 import com.caykhe.order_service.dtos.RequestOrderItem;
+import com.caykhe.order_service.models.Order;
 import com.caykhe.order_service.models.OrderItem;
 import com.caykhe.order_service.repositories.OrderItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class OrderItemService {
 
     final OrderItemRepository orderItemRepository;
+    final OrderService orderService;
 
     public Optional<OrderItem> getOrderItemById(String id) {
         return orderItemRepository.findById(id);
@@ -26,13 +28,18 @@ public class OrderItemService {
     }
 
     public OrderItem createOrderItem(RequestOrderItem request) {
-        OrderItem newOrderItem = OrderItem.builder()
-                .orderId(request.getOrderId())
-                .productId(request.getProductId())
-                .quantity(request.getQuantity())
-                .price(request.getPrice())
-                .build();
-        return orderItemRepository.save(newOrderItem);
+       if(orderService.CheckOrder(request.getOrderId())){
+           OrderItem newOrderItem = OrderItem.builder()
+                   .orderId(request.getOrderId())
+                   .productId(request.getProductId())
+                   .quantity(request.getQuantity())
+                   .price(request.getPrice())
+                   .build();
+           return orderItemRepository.save(newOrderItem);
+       }
+       else
+           throw new ApiException("Không tìm thấy Order id", HttpStatus.NOT_FOUND);
+
     }
 
     public OrderItem updateOrderItem(String id, RequestOrderItem requestUpdate) throws Exception {
